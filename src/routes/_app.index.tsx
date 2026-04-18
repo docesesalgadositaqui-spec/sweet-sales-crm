@@ -119,7 +119,7 @@ function Dashboard() {
                 <YAxis stroke="var(--muted-foreground)" fontSize={12} />
                 <Tooltip
                   contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }}
-                  formatter={(v: number) => BRL(v)}
+                  formatter={(v) => BRL(Number(v))}
                 />
                 <Line type="monotone" dataKey="total" stroke="var(--primary)" strokeWidth={2.5}
                   dot={{ fill: "var(--primary)", r: 3 }} activeDot={{ r: 5 }} />
