@@ -136,11 +136,18 @@ async function callApi(method: "GET" | "POST", sheet: SheetName, body?: any): Pr
   return res.json();
 }
 
+function ensureIds<T extends { id?: any }>(rows: T[]): T[] {
+  return rows.map((r, i) => {
+    const id = r?.id != null && String(r.id).trim() !== "" ? String(r.id) : `row_${i}`;
+    return { ...r, id };
+  });
+}
+
 export async function listAll<T = any>(sheet: SheetName): Promise<T[]> {
   if (isUsingMock()) return getMock()[sheet] as T[];
   try {
     const data = await callApi("GET", sheet);
-    if (Array.isArray(data)) return data as T[];
+    if (Array.isArray(data)) return ensureIds(data) as T[];
     // resposta de erro -> cai pro mock
     return getMock()[sheet] as T[];
   } catch {
