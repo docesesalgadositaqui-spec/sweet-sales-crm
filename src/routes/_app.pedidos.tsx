@@ -120,7 +120,12 @@ function PedidosPage() {
     ]);
     setList(p.map(x => ({ ...x, itens: parseItens(x.itens) })));
     setClientes(c);
-    setProdutos(pr.filter(x => x.ativo === true || x.ativo === "true" || x.ativo === "1"));
+    setProdutos(pr.filter(x => {
+      const a = x.ativo;
+      // Treat missing/empty as active; only exclude explicit false/"false"/"0"/"não"
+      if (a === false || a === "false" || a === "0" || a === "não" || a === "nao" || a === "Não") return false;
+      return true;
+    }));
   };
 
   useEffect(() => { load(); }, []);
