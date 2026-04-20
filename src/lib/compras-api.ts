@@ -1,36 +1,40 @@
 // API específica para a aba "i" (Compras / Insumos)
-// Usa o formato do Apps Script novo: { acao, aba, dados: { linha, campos } }
-// e GET ?aba=i para listar.
+// Usa uma SEGUNDA URL de Apps Script (independente da principal),
+// configurável em Configurações.
 
-import { getApiUrl } from "./api";
+const STORAGE_KEY = "crm_compras_api_url";
+const DEFAULT_URL =
+  "https://script.google.com/macros/s/AKfycby96xp6yX9aO1EVjeyXuGmAJiAUnI0HZ2tDn9711pMwT_mWDMDm-BpS6wTWB70ivhzh/exec";
+
+export function getComprasApiUrl(): string {
+  if (typeof window === "undefined") return DEFAULT_URL;
+  return localStorage.getItem(STORAGE_KEY) || DEFAULT_URL;
+}
+
+export function setComprasApiUrl(url: string) {
+  localStorage.setItem(STORAGE_KEY, url);
+}
 
 export interface CompraItem {
-  linha: number; // número da linha na planilha (>= 2)
+  linha: number;
   produto: string;
   preco: number;
 }
 
 const ABA = "i";
 
-// Lê a aba "i" e retorna apenas linhas com produto preenchido nas colunas A/B.
 export async function listCompras(): Promise<CompraItem[]> {
-  const url = `${getApiUrl()}?aba=${ABA}`;
+  const url = `${getComprasApiUrl()}?aba=${ABA}`;
   const res = await fetch(url, { redirect: "follow" });
   if (!res.ok) throw new Error("Erro ao carregar a aba i");
   const data = await res.json();
   if (!Array.isArray(data)) return [];
 
-  // Detecta cabeçalho (primeira linha tem rótulos tipo "Produtos" / "Preços").
-  // O Apps Script já devolve objetos com chaves dos cabeçalhos reais.
-  // Como a aba "i" tem múltiplos blocos, procuramos as chaves do bloco principal.
   return data
     .map((row: any, idx: number) => {
       const keys = Object.keys(row);
-      // tenta achar coluna "produto" e "preço"
-      const produtoKey =
-        keys.find((k) => /produto/i.test(k)) || keys[0];
-      const precoKey =
-        keys.find((k) => /pre[çc]o/i.test(k)) || keys[1];
+      const produtoKey = keys.find((k) => /produto/i.test(k)) || keys[0];
+      const precoKey = keys.find((k) => /pre[çc]o/i.test(k)) || keys[1];
       const produto = String(row[produtoKey] ?? "").trim();
       const preco = Number(row[precoKey] ?? 0) || 0;
       return { linha: idx + 2, produto, preco };
@@ -39,7 +43,7 @@ export async function listCompras(): Promise<CompraItem[]> {
 }
 
 async function postAction(body: any) {
-  const res = await fetch(getApiUrl(), {
+  const res = await fetch(getComprasApiUrl(), {
     method: "POST",
     redirect: "follow",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -50,37 +54,25 @@ async function postAction(body: any) {
 }
 
 export async function addCompra(produto: string, preco: number) {
-  // tenta ambos os formatos de payload (compatibilidade com os dois Apps Scripts)
   return postAction({
     aba: ABA,
-    sheet: ABA,
     acao: "adicionar",
-    action: "create",
     dados: { campos: { Produtos: produto, Preços: preco } },
-    data: { Produtos: produto, Preços: preco },
   });
 }
 
 export async function updateCompra(linha: number, produto: string, preco: number) {
   return postAction({
     aba: ABA,
-    sheet: ABA,
     acao: "editar",
-    action: "update",
     dados: { linha, campos: { Produtos: produto, Preços: preco } },
-    id: linha,
-    data: { Produtos: produto, Preços: preco },
   });
 }
 
 export async function deleteCompra(linha: number) {
-  // Apps Script novo não tem "excluir" — limpamos os campos da linha
   return postAction({
     aba: ABA,
-    sheet: ABA,
     acao: "editar",
-    action: "delete",
     dados: { linha, campos: { Produtos: "", Preços: "" } },
-    id: linha,
   });
 }
