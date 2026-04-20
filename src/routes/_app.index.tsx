@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { format, parseISO, startOfMonth, isSameMonth, subDays, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_app/")({
   component: Dashboard,
 });
 
