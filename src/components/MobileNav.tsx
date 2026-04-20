@@ -1,12 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Users, Cookie, ShoppingBag, Settings } from "lucide-react";
+import { LayoutDashboard, Users, ShoppingBag, ShoppingCart, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/", label: "Início", icon: LayoutDashboard },
   { to: "/clientes", label: "Clientes", icon: Users },
-  { to: "/produtos", label: "Doces", icon: Cookie },
   { to: "/pedidos", label: "Pedidos", icon: ShoppingBag },
+  { to: "/compras", label: "Compras", icon: ShoppingCart },
   { to: "/configuracoes", label: "Config", icon: Settings },
 ] as const;
 
