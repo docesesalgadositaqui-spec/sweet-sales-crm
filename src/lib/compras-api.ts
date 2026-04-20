@@ -72,7 +72,7 @@ export async function updateCompra(linha: number, produto: string, preco: number
 export async function deleteCompra(linha: number) {
   return postAction({
     aba: ABA,
-    acao: "editar",
-    dados: { linha, campos: { Produtos: "", Preços: "" } },
+    acao: "excluir",
+    dados: { linha },
   });
 }
