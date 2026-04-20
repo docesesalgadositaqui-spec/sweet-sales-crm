@@ -76,3 +76,13 @@ export async function deleteCompra(linha: number) {
     dados: { linha },
   });
 }
+
+// Leitura genérica de qualquer aba na mesma planilha (ex.: RESUMO)
+export async function listSheet(aba: string): Promise<Record<string, any>[]> {
+  const url = `${getComprasApiUrl()}?aba=${encodeURIComponent(aba)}`;
+  const res = await fetch(url, { redirect: "follow" });
+  if (!res.ok) throw new Error(`Erro ao carregar a aba ${aba}`);
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
+  return data;
+}
