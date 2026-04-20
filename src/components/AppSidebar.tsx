@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Users, Cookie, ShoppingBag, Settings, Heart } from "lucide-react";
+import { LayoutDashboard, Users, Cookie, ShoppingBag, Settings, Heart, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -7,6 +7,7 @@ const items = [
   { to: "/clientes", label: "Clientes", icon: Users },
   { to: "/produtos", label: "Produtos", icon: Cookie },
   { to: "/pedidos", label: "Pedidos", icon: ShoppingBag },
+  { to: "/compras", label: "Compras", icon: ShoppingCart },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
 
