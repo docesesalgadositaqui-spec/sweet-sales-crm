@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppProdutosRouteImport } from './routes/_app.produtos'
+import { Route as AppPrecificacaoRouteImport } from './routes/_app.precificacao'
 import { Route as AppPedidosRouteImport } from './routes/_app.pedidos'
 import { Route as AppConfiguracoesRouteImport } from './routes/_app.configuracoes'
 import { Route as AppComprasRouteImport } from './routes/_app.compras'
@@ -29,6 +30,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppProdutosRoute = AppProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPrecificacaoRoute = AppPrecificacaoRouteImport.update({
+  id: '/precificacao',
+  path: '/precificacao',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPedidosRoute = AppPedidosRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/compras': typeof AppComprasRoute
   '/configuracoes': typeof AppConfiguracoesRoute
   '/pedidos': typeof AppPedidosRoute
+  '/precificacao': typeof AppPrecificacaoRoute
   '/produtos': typeof AppProdutosRoute
 }
 export interface FileRoutesByTo {
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/compras': typeof AppComprasRoute
   '/configuracoes': typeof AppConfiguracoesRoute
   '/pedidos': typeof AppPedidosRoute
+  '/precificacao': typeof AppPrecificacaoRoute
   '/produtos': typeof AppProdutosRoute
   '/': typeof AppIndexRoute
 }
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/_app/compras': typeof AppComprasRoute
   '/_app/configuracoes': typeof AppConfiguracoesRoute
   '/_app/pedidos': typeof AppPedidosRoute
+  '/_app/precificacao': typeof AppPrecificacaoRoute
   '/_app/produtos': typeof AppProdutosRoute
   '/_app/': typeof AppIndexRoute
 }
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/pedidos'
+    | '/precificacao'
     | '/produtos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/pedidos'
+    | '/precificacao'
     | '/produtos'
     | '/'
   id:
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | '/_app/compras'
     | '/_app/configuracoes'
     | '/_app/pedidos'
+    | '/_app/precificacao'
     | '/_app/produtos'
     | '/_app/'
   fileRoutesById: FileRoutesById
@@ -131,6 +143,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos'
       fullPath: '/produtos'
       preLoaderRoute: typeof AppProdutosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/precificacao': {
+      id: '/_app/precificacao'
+      path: '/precificacao'
+      fullPath: '/precificacao'
+      preLoaderRoute: typeof AppPrecificacaoRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/pedidos': {
@@ -169,6 +188,7 @@ interface AppRouteChildren {
   AppComprasRoute: typeof AppComprasRoute
   AppConfiguracoesRoute: typeof AppConfiguracoesRoute
   AppPedidosRoute: typeof AppPedidosRoute
+  AppPrecificacaoRoute: typeof AppPrecificacaoRoute
   AppProdutosRoute: typeof AppProdutosRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -178,6 +198,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppComprasRoute: AppComprasRoute,
   AppConfiguracoesRoute: AppConfiguracoesRoute,
   AppPedidosRoute: AppPedidosRoute,
+  AppPrecificacaoRoute: AppPrecificacaoRoute,
   AppProdutosRoute: AppProdutosRoute,
   AppIndexRoute: AppIndexRoute,
 }
@@ -190,3 +211,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
